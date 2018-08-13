@@ -1,23 +1,29 @@
-console.log('Starting notes-node app.js');
-
 const fs = require('fs');
-const os = require('os')
-const notes = require('./notes');
 const _ = require('lodash');
+const yargs = require('yargs');
 
-var user = os.userInfo();
+const notes = require('./notes');
+const args = yargs.argv;
 
-var sum = notes.add(10,-3);
-console.log(`Sum is ${sum}`);
+const command = args._[0];
+const title = args.title;
+const message = args.message;
 
-var diff = notes.sub(10,-3);
-console.log(`Difference is ${diff}`);
-
-fs.appendFile('greetings.txt', `Created using NodeJS by ${user.username}\n`, (err) => {
-    if (err) throw err;
-    console.log('The data was appended to file!');
-});
-
-// lodash - reverse an array
-var nums = [2,3,5,99,7,11,13,17,19,23,29]
-console.log(_.reverse(nums));
+if (command === 'add'){
+    let newNote = notes.addNote(title, message);
+    notes.logNote(newNote);
+}   
+else if (command === 'remove'){
+    let isRemoved = notes.removeNote(title);
+    console.log(isRemoved
+                ? `Note removed for title='${title}'`
+                : `Note not found for title='${title}'`);
+}
+else if (command === 'findOne'){
+    let note = notes.findNote(title);
+    notes.logNote(note);
+}
+else if (command === 'list')
+    notes.listAllNotes();
+else
+    console.log(`Invalid command: ${command}`);
